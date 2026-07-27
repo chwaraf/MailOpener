@@ -1,0 +1,2 @@
+-- Widget_Sound.lua stub
+-- This is a minimal placeholder. It ensures LSM30_Sound is valid.

@@ -1,0 +1,158 @@
+v1.2.16		Zerotorescue		Mon, 19 Dec 2011 13:30:00 +0200
+
+	* The mailbox will still be automatically refreshed while automatic mail opening is disabled.
+	
+v1.2.15		Zerotorescue		Wed, 30 Nov 2011 23:00:00 +0200
+
+	* TradeSkillMaster's Open All button should now be hidden so the text doesn't overlap the MailOpener button's text.
+	* Updated TOC to make the addon 4.3 compatible.
+	
+v1.2.14		Zerotorescue		Wed, 29 Jun 2011 10:30:00 +0200
+
+	* Fixed the auction house mail filters.
+
+v1.2.13		Zerotorescue		Tue, 28 Jun 2011 22:00:00 +0200
+
+	* Fixed an error with the OpenAll module caused by patch 4.2.
+	* Addon should no longer be marked as out-of-date for the duration of this patch.
+	
+v1.2.12		Zerotorescue		Sat, 19 Feb 2011 15:00:00 +0200
+
+	* Fixed an error at the mailbox that occured when using the latest ZeroAuctions (BETA) version.
+	
+v1.2.11		Zerotorescue		Sat, 29 Jan 2011 22:30:00 +0200
+
+	* Fixed Mail Opener being added to the Blizzard config twice.
+	* Might have fixed a possible issue with mail box refreshing not occuring right after logging in.
+	
+v1.2.10		Zerotorescue		Fri, 12 Oct 2010 18:00:00 +0200
+
+	* A "C stack overflow"-error when clicking the mail opener options in the interface -> addons tab should no longer occur.
+
+v1.2.9		Zerotorescue		Wed, 20 Oct 2010 22:30:00 +0200
+
+	* Fixed the retrieval of a single attachment from mail when you are close to the keep free space limit.
+	* Added support for the other QuickAuctions child-addon called "AuctionProfitMaster".
+	
+v1.2.8		Zerotorescue		Sat, 16 Oct 2010 15:30:00 +0200
+
+	* Fixed double loading of ZeroAuctions when using AddonLoader.
+
+v1.2.7		Zerotorescue		Sat, 16 Oct 2010 15:00:00 +0200
+
+	* Hopefully fixed hooking errors (I can´t reproduce them, but this should still solve it).
+	* Fixed the copy dialog.
+	* All QuickAuctions checks have been replaced with ZeroAuctions, as QA has been discontinued.
+	
+v1.2.6		Zerotorescue		Wed, 13 Oct 2010 15:30:00 +0200
+
+	* TOC update.
+	
+v1.2.5		Zerotorescue		Tue, 12 Oct 2010 12:00:00 +0200
+
+	* Now compatible with my future version of QuickAuctions (ZeroAuctions).
+	* Disabling Mail Opener will now also stop the overriding of the CheckInbox function.
+
+v1.2.4		Zerotorescue		Fri, 01 Oct 2010 23:30:00 +0200
+
+	+ Added an option to override the mailbox refresher to delay a mailbox refresh while there is still mail remaining. This option is enabled by default.
+	* Only announce mail skipped the first OpenAll after a server refresh, to reduce the spam with continuous mail opening enabled.
+	* Mail opening will now be interrupted when middle or alt-clicking the open all button.
+
+v1.2.3		Zerotorescue		Mon, 27 Sep 2010 09:00:00 +0200
+
+	* enUS is default locale again, this should solve the errors with any non-English clients (please consider translating at http://wow.curseforge.com/addons/mailopener/localization/ ).
+
+v1.2.2		Zerotorescue		Sun, 26 Sep 2010 15:30:00 +0200
+
+	+ Added new module: Indicator. This module will show / hide the mail icon based on the amount of mail still waiting for you at the server.
+
+v1.2.1		Zerotorescue		Fri, 24 Sep 2010 22:30:00 +0200
+
+	* Added AceLocale library. Oops, I forgot it because other addons usually provided it.
+
+v1.2.0		Zerotorescue		Fri, 17 Sep 2010 12:00:00 +0200
+
+	Note: Remember that when updating from v1.1.4 or earlier versions you must restart the client or you will get many LUA errors.
+
+	* Tagging as v1.2.0 to indicate the last few builds (1.1.5 & 1.1.6) did a few larger/more important changes.
+	* Fixed an error when toggling auto mail on or off.
+
+v1.1.7		Zerotorescue		Thu, 16 Sep 2010 18:30:00 +0200
+
+	* My own tests were not sufficient, fixed an error when opening cash mail.
+
+v1.1.6		Zerotorescue		Thu, 16 Sep 2010 17:30:00 +0200
+
+	* The keep free space will now cause the opener to partially loot mail when you are near the keep free space requirement, rather than skipping the entire mail. The config has been adjusted to reflect this change.
+	* Fixed the timespent tracker of the Collected module.
+	* Fixed some strings I forgot to localize in the Collected module.
+	+ Added functionality for URLs to be added to tips.
+	+ Added a tip requesting your help localizing the addon. Please visit http://wow.curseforge.com/addons/mailopener/localization/ if you are a kind person mastering a language supported by the game client (also would like some clever English person to correct any of my typos and grammar errors).
+
+v1.1.5		Zerotorescue		Wed, 15 Sep 2010 17:30:00 +0200
+
+	+ Added localization files and set it up at Curseforge. Please head to CurseForge.com and search for MailOpener is you are willing to translate some things.
+	* Modified all files to support the localization strings.
+	* The TOC file has been updated with the locations for the localization files. A game client restart is required or you will get spammed with many errors.
+
+v1.1.4		Zerotorescue		Tue, 14 Sep 2010 00:30:00 +0200
+
+	* Fixed a LUA error when logging in.
+	* Tracking of the time spent at the mailbox with the Collected module should now be enabled by default.
+	* Hopefully fixed the usage of "mails".
+	+ Added a section for Mail Opener tips to the bottom of the general config. Also, the first time you start the config you will be prompted to enable continuous opening. Right now only a handful of tips are there but I plan to extend it with FAQ.
+	~ Skipped 1.1.3.
+
+v1.1.2		Zerotorescue		Sun, 12 Sep 2010 21:30:00 +0200
+	
+	+ Holding shift while clicking the open all button will now temporarily change the mail opening filters to auto loot every single mail with attachments (no exceptions).
+	+ Right clicking the open all button will now show a drop down menu where you can quickly toggle the mail opening filters.
+	+ Added a tooltip to the open all button explaining the above two features.
+	+ Added neat(er) tooltips for both the mail opener status toggler as the config button.
+	+ Added an option below the filters to disable the shift click functionality of the open all button.
+	+ You can now toggle the help tooltips for the Mail Opener-added MailFrame buttons in the general config.
+	* Only when holding the shift key while opening the mailbox will toggle the opening status. If you want to do it somewhere in the middle of your mailbox visit, just untick the mail opener checkbox.
+	
+v1.1.1		Zerotorescue		Sun, 12 Sep 2010 01:30:00 +0200
+	
+	+ Added a new option to both of the current sound notifications to limit playing of the sound to once per mailbox visit, instead of once per mailbox refresh / bags update.
+	* Now using more standardized prefixes for changes.
+	* No longer showing spent "0 minutes" when you spent less than 59 seconds at the mailbox.
+	* When you only opened only a single mail, the summary will show "from this mail" rather than "from these mails".
+	* Reworded the QuickAuctions automail status changer config options. (old: auto mailing, new: auto mail status)
+	* Fixed an error when disabling the FailSafe module.
+
+v1.1.0		Zerotorescue		Fri, 10 Sep 2010 19:00:00 +0200
+
+	+ Added a new config group: Modules. This group will show the module statuses and descriptions and it will contain all optional modules (with their settings) as subgroups.
+	+ Now making a manual changelog as the one generated by Curseforge is useless.
+	- Removed all BeanCounter checks in files.
+	+ Added a new module: BeanCounter Support. This module will now take care of preventing mail opening while BeanCounter is scanning.
+	+ Added AceHook library for the BeanCounter Support module.
+	* Sorted the Core.lua OnInitialize to properly toggle modules before doing time consuming things.
+	* All module comments are now a property of the modules themselves and can be retrieved with (string)".moduleDescription" and (bool)".moduleRequired".
+	* All module references are now called "mod".
+	* Removed all libraries from the repository. 
+
+v1.0.2		Zerotorescue		Thu, 09 Sep 2010 22:00:00 +0200
+
+	* The opener will no longer lock when a mailbox refresh happens while opening. 
+
+v1.0.0		Zerotorescue		Thu, 09 Sep 2010 18:00:00 +0200
+
+	+ complete rewrite to make MailOpener a stand-alone addon.
+	
+	MailOpener will no longer let Postal do the opening but rather do it by itself. You can change the configuration at the interface -> addons options or by opening the option interface with /mo c (/mailopener config). You can still leave Postal enabled for it's mail sending modules but there is no reason to leave it on for the mail opening.
+	
+	See the addon page for more information.
+
+------------------------------------------------------------
+Legend:
+
+! Notable change / important information
+* Changed
++ Added feature or improvement
+- Something removed or a bug fix
+
+Version numbering: major.minor.build (optional -BETA appended)

@@ -191,9 +191,12 @@ function mod:OnEnable()
 		frame.smallText:SetJustifyH("LEFT");
 		frame.smallText:SetJustifyV("MIDDLE");
 		
-		frame:SetPoint("TOPLEFT", MailFrame, "TOPLEFT", 75, -38);
-		-- SMALLER CLICKABLE AREA: hug text instead of 270x35 invisible block
-		frame:SetWidth(120);
+		-- SMALLER CLICKABLE AREA: the label spans 270px left-to-right from x=75, but a
+		-- click layer that wide swallows clicks meant for the MailFrame underneath.
+		-- Halve the previous 120px hit box to 60px and centre it on the label instead of
+		-- anchoring it at the left edge, so only clicks around the middle of the text copy it.
+		frame:SetPoint("CENTER", MailFrame, "TOPLEFT", 75 + 60, -38 - 7);
+		frame:SetWidth(60);
 		frame:SetHeight(14);
 		frame:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 		frame:SetScript("OnClick", function(self)

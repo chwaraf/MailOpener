@@ -25,6 +25,7 @@ function mod:OnInitialize()
 			trackTimeSpent = true,
 			sessionSummary = false,
 			batchSummary = false,
+			batchSessionSummary = false,
 		},
 	};
 	
@@ -315,7 +316,10 @@ function mod:Summarize(full)
 		MailOpener:Print(printMessage);
 	end
 	
-	if self.db.profile.sessionSummary and ((sessionMailOpened and (not mailOpened or sessionMailOpened > mailOpened)) or (tempSessionTimeSpent and (not timeSpent or tempSessionTimeSpent > timeSpent)) or (sessionEarned and (not earned or sessionEarned > earned)) or (sessionItemsgained and (not itemsGained or sessionItemsgained > itemsGained))) then
+	-- The session summary is always shown with the full (mailbox closed) summary, but
+	-- only with the batch summary when explicitly enabled, so it doesn't repeat itself
+	-- every time a new batch is picked up
+	if self.db.profile.sessionSummary and (full or self.db.profile.batchSessionSummary) and ((sessionMailOpened and (not mailOpened or sessionMailOpened > mailOpened)) or (tempSessionTimeSpent and (not timeSpent or tempSessionTimeSpent > timeSpent)) or (sessionEarned and (not earned or sessionEarned > earned)) or (sessionItemsgained and (not itemsGained or sessionItemsgained > itemsGained))) then
 		-- Message buffer, append details we have data for
 		printMessage = L["(Session summary)"] .. " ";
 	
@@ -530,6 +534,18 @@ function mod:GetOptionsGroup()
 							end
 						end,
 						get = function() return self.db.profile.batchSummary; end,
+						width = "full",
+					},
+					batchSessionSummary = {
+						order = 40,
+						type = "toggle",
+						name = L["Also show the session summary whenever the batch summary is shown"],
+						desc = L["Also show a summary of the recorded stats within the entire session whenever the batch summary is shown after opening the current batch has finished. By default the session summary is only shown when the mailbox is closed."],
+						set = function(i, v)
+							self.db.profile.batchSessionSummary = v;
+						end,
+						get = function() return self.db.profile.batchSessionSummary; end,
+						disabled = function() return not self.db.profile.sessionSummary; end,
 						width = "full",
 					},
 				},

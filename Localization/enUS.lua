@@ -44,6 +44,8 @@ L["Prevents mail opening while BeanCounter is still scanning. Does nothing when 
 -- Collected
 L["Also show a summary of the recorded stats within the entire session"] = true -- Needs review
 L["Also show a summary of the recorded stats within the entire session (since your last login or /reload)."] = true -- Needs review
+L["Also show a summary of the recorded stats within the entire session whenever the batch summary is shown after opening the current batch has finished. By default the session summary is only shown when the mailbox is closed."] = true -- Needs review
+L["Also show the session summary whenever the batch summary is shown"] = true -- Needs review
 L["|cfffed000Shift-click|r the |cfffed000open all|r button to temporarily override your filters and loot every single mail containing attachments and/or gold."] = true -- Needs review
 L["Change settings for the collected module."] = true -- Needs review
 L["Collected"] = true -- Needs review
@@ -307,6 +309,9 @@ L["outbid on auction"] = true -- Needs review
 L["Processing %d: %s"] = true -- Needs review
 L["Processing %d: %s (%s)"] = true -- Needs review
 L["Remaining Mail"] = true -- Needs review
+L["Reload"] = true -- Needs review
+L["Reload mail"] = true -- Needs review
+L["Click to fetch the mail that is still waiting on the server right away instead of waiting for the next automatic refresh."] = true -- Needs review
 L["Shift key was held while pressing the open all button. Temporarily overriding filters; going to open every mail with attachments."] = true -- Needs review
 L["Skipping %d: %s"] = true -- Needs review
 L["Skipping %d: %s (%s)"] = true -- Needs review

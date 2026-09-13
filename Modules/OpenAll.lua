@@ -229,6 +229,44 @@ function mod:OnEnable()
 	
 	self.timeLeftFrame:Show();
 	
+	if not self.btnReload then
+		-- Manual refresh button, built into the free 1/5 of the frame width that the
+		-- time left label no longer uses. It is only shown while mail is still waiting
+		-- for the next server refresh (one batch picked up, more still in the queue)
+		local reloadButton = CreateFrame("Button", "btnMailOpenerReload", MailFrame, "UIPanelButtonTemplate");
+		reloadButton:SetText(L["Reload"]);
+		reloadButton:SetHeight(23);
+		reloadButton:SetWidth(60);
+		reloadButton:SetScale(0.8);
+		reloadButton:SetPoint("TOPRIGHT", MailFrame, "TOPRIGHT", -10, -36);
+		reloadButton:SetScript("OnClick", function()
+			-- Fetch the waiting mail from the server right away instead of waiting for the automatic refresh
+			CheckInbox();
+		end);
+		reloadButton.tooltipTitle = L["Reload mail"];
+		reloadButton.tooltip = L["Click to fetch the mail that is still waiting on the server right away instead of waiting for the next automatic refresh."];
+		reloadButton:SetScript("OnEnter", function(btnSelf)
+			if MailOpener.db.profile.general.showHelpTooltips then
+				GameTooltip:SetOwner(btnSelf, "ANCHOR_BOTTOM")
+				GameTooltip:SetPoint("BOTTOM", btnSelf, "TOP")
+				GameTooltip:SetText(btnSelf.tooltipTitle, 1, .82, 0, 1)
+				
+				if type(btnSelf.tooltip) == "string" then
+					GameTooltip:AddLine(btnSelf.tooltip, 1, 1, 1, 1);
+				end
+				
+				GameTooltip:Show();
+			end
+		end);
+		reloadButton:SetScript("OnLeave", function()
+			GameTooltip:Hide();
+		end);
+		
+		self.btnReload = reloadButton;
+	end
+	
+	self.btnReload:Hide();
+	
 	-- Go through all children of the mail frame to find QA's element and hide it
 	-- There's no other way to do this because QuickAuctions has a local referrence to it (not as a property of the object like most other frames)
 	local kids = { MailFrame:GetChildren() };
@@ -254,6 +292,10 @@ function mod:OnDisable()
 	
 	if self.timeLeftFrame then
 		self.timeLeftFrame:Hide();
+	end
+	
+	if self.btnReload then
+		self.btnReload:Hide();
 	end
 
 	if MailOpener.PostalEnabled then
@@ -329,6 +371,11 @@ function mod:Stop()
     
 	self:CancelTimer(self.tmrMailOpener, true);
 	self:CancelTimer(self.tmrTimeRemaining, true);
+	
+	-- No waiting mail to reload while the mailbox is closed
+	if self.btnReload then
+		self.btnReload:Hide();
+	end
 	
 	self:SetOpeningStatus(false);
 end
@@ -752,6 +799,15 @@ end
 function mod:UpdateTimer()
 	if lastSync then
 		self:UpdateMailCount();
+		
+		-- Only show the manual reload button while mail is still waiting for the next refresh
+		if self.btnReload then
+			if numHiddenMail and numHiddenMail > 0 then
+				self.btnReload:Show();
+			else
+				self.btnReload:Hide();
+			end
+		end
 		
 		-- Calculate the total amount of mail waiting
 		local numTotalMail = ( numHiddenMail + numCurrentMail );

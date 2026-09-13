@@ -6,13 +6,13 @@ mod.moduleDescription = L["Shows a simple summary of what has been collected at 
 mod.moduleRequired = false;
 
 -- Gold
-local previousGold, earned, sessionEarned;
+local previousGold, earned, batchEarned, sessionEarned;
 -- Items
-local previousFreeSlotsAvailable, itemsGained, sessionItemsgained;
+local previousFreeSlotsAvailable, itemsGained, batchItemsGained, sessionItemsgained;
 -- Mail
-local previousMailCount, mailOpened, sessionMailOpened;
+local previousMailCount, mailOpened, batchMailOpened, sessionMailOpened;
 -- Time
-local timeStarted, sessionTimeSpent; -- even though the first contains GetTime(), the second var will be filled with actual seconds
+local timeStarted, batchTimeStarted, sessionTimeSpent; -- even though the first contains GetTime(), the second var will be filled with actual seconds
 
 local updated;
 
@@ -79,6 +79,7 @@ function mod:MAIL_SHOW()
 	
 		previousGold = GetMoney();
 		earned = 0;
+		batchEarned = 0;
 	end
 	
 	-- Items
@@ -87,6 +88,7 @@ function mod:MAIL_SHOW()
 	
 		previousFreeSlotsAvailable = self:GetNumFreeSlots();
 		itemsGained = 0;
+		batchItemsGained = 0;
 	end
 	
 	-- Mail
@@ -95,11 +97,13 @@ function mod:MAIL_SHOW()
 		
 		previousMailCount = nil;
 		mailOpened = 0;
+		batchMailOpened = 0;
 	end
 	
 	-- Time Spent
 	if self.db.profile.trackTimeSpent then
 		timeStarted = GetTime();
+		batchTimeStarted = GetTime();
 	end
 end
 
@@ -119,6 +123,7 @@ function mod:PLAYER_MONEY()
 		local goldEarned = ( currentGold - previousGold );
 		
 		earned = ( earned + goldEarned );
+		batchEarned = ( batchEarned + goldEarned );
 		
 		updated = true;
 		
@@ -140,6 +145,7 @@ function mod:BAG_UPDATE()
 		local gained = ( previousFreeSlotsAvailable - freeSlotAvailable );
 		
 		itemsGained = ( itemsGained + gained  );
+		batchItemsGained = ( batchItemsGained + gained );
 		
 		updated = true;
 		
@@ -172,7 +178,8 @@ function mod:MAIL_INBOX_UPDATE()
 			--local opened = ( previousMailCount - numItems );
 			
 			mailOpened = ( mailOpened + 1 );
-		
+			batchMailOpened = ( batchMailOpened + 1 );
+			
 			updated = true;
 		
 			if self.db.profile.sessionSummary then
@@ -190,6 +197,15 @@ function mod:MO_OPEN_COMPLETE()
 		self:Summarize(false);
 		
 		updated = false;
+		
+		-- Reset the batch counters so the next batch summary only reports what was
+		-- collected during the next batch. Without this, the summary would keep
+		-- re-reporting the visit totals (like gold earned in an earlier batch)
+		-- whenever any new stat updates, even if no new gold arrived
+		batchEarned = 0;
+		batchItemsGained = 0;
+		batchMailOpened = 0;
+		batchTimeStarted = GetTime();
 	end
 end
 
@@ -201,32 +217,55 @@ function mod:Stop()
 	
 	-- Clear any var in the memory remaining
 	
+	updated = false;
+	
 	-- Money
 	self:UnregisterEvent("PLAYER_MONEY");
 	previousGold = nil;
 	earned = nil;
+	batchEarned = nil;
 	
 	-- Items
 	self:UnregisterEvent("BAG_UPDATE");
 	previousFreeSlotsAvailable = nil;
 	itemsGained = nil;
+	batchItemsGained = nil;
 		
 	-- Mail
 	self:UnregisterEvent("MAIL_INBOX_UPDATE");
 	previousMailCount = nil;
 	mailOpened = nil;
+	batchMailOpened = nil;
 	
 	-- Time Spent
 	timeStarted = nil;
+	batchTimeStarted = nil;
 end
 
 function mod:Summarize(full)
 	-- Message buffer, append details we have data for
 	local printMessage = "";
 	
+	-- The full summary (mailbox closed) reports everything collected during the whole
+	-- mailbox visit, while the batch summary (after each finished opening round) only
+	-- reports what was collected since the previous summary, so stats from earlier
+	-- batches (like gold) are never repeated when nothing new arrived
+	local mailTotal, itemsTotal, goldTotal, reportTimeStarted;
+	if full then
+		mailTotal = mailOpened;
+		itemsTotal = itemsGained;
+		goldTotal = earned;
+		reportTimeStarted = timeStarted;
+	else
+		mailTotal = batchMailOpened;
+		itemsTotal = batchItemsGained;
+		goldTotal = batchEarned;
+		reportTimeStarted = batchTimeStarted;
+	end
+	
 	local timeSpent, tempSessionTimeSpent;
-	if timeStarted then
-		timeSpent = ceil( GetTime() - timeStarted );
+	if reportTimeStarted then
+		timeSpent = ceil( GetTime() - reportTimeStarted );
 		
 		if self.db.profile.sessionSummary and self.db.profile.trackTimeSpent then
 			tempSessionTimeSpent = ( sessionTimeSpent + timeSpent );
@@ -239,18 +278,18 @@ function mod:Summarize(full)
 	end
 	
 	-- Did we record any mail being opened?
-	if mailOpened and mailOpened > 0 then
+	if mailTotal and mailTotal > 0 then
 		-- Time Spent
 		if timeSpent and timeSpent > 0 then
 			local timeSpentMinutes = floor( timeSpent / 60 );
 			local timeSpentSeconds = ( timeSpent % 60 );
 			if timeSpentMinutes ~= 0 then
-				printMessage = printMessage .. format(L["Collected a total of %d mail within %d minutes and %d seconds."], mailOpened, timeSpentMinutes, timeSpentSeconds) .. " ";
+				printMessage = printMessage .. format(L["Collected a total of %d mail within %d minutes and %d seconds."], mailTotal, timeSpentMinutes, timeSpentSeconds) .. " ";
 			else
-				printMessage = printMessage .. format(L["Collected a total of %d mail within %d seconds."], mailOpened, timeSpentSeconds) .. " ";
+				printMessage = printMessage .. format(L["Collected a total of %d mail within %d seconds."], mailTotal, timeSpentSeconds) .. " ";
 			end
 		else
-			printMessage = printMessage .. format(L["Collected a total of %d mail."], mailOpened) .. " ";
+			printMessage = printMessage .. format(L["Collected a total of %d mail."], mailTotal) .. " ";
 		end
 	elseif timeSpent and timeSpent > 0 then
 		local timeSpentMinutes = floor( timeSpent / 60 );
@@ -263,12 +302,12 @@ function mod:Summarize(full)
 	end
 	
 	-- Did we record any items or gold being looted?
-	if (itemsGained and itemsGained > 0) and (earned and earned > 0) then
-		printMessage = printMessage .. format(L["You gained %d items and %s from this."], itemsGained, MailOpener:FormatMoney(earned));
-	elseif itemsGained and itemsGained > 0 then
-		printMessage = printMessage .. format(L["You gained %d items from this."], itemsGained);
-	elseif earned and earned > 0 then
-		printMessage = printMessage .. format(L["You gained %s from this."], MailOpener:FormatMoney(earned));
+	if (itemsTotal and itemsTotal > 0) and (goldTotal and goldTotal > 0) then
+		printMessage = printMessage .. format(L["You gained %d items and %s from this."], itemsTotal, MailOpener:FormatMoney(goldTotal));
+	elseif itemsTotal and itemsTotal > 0 then
+		printMessage = printMessage .. format(L["You gained %d items from this."], itemsTotal);
+	elseif goldTotal and goldTotal > 0 then
+		printMessage = printMessage .. format(L["You gained %s from this."], MailOpener:FormatMoney(goldTotal));
 	end
 	
 	-- Did we record anything? print that!

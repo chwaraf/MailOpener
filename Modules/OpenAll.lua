@@ -187,12 +187,16 @@ function mod:OnEnable()
 		frame.smallText = frame:CreateFontString("MailOpenerTimeLeftFrameTimeRemaining", "OVERLAY", "GameFontNormal");
 		frame.smallText:SetFont(GameFontHighlight:GetFont(), 11, "OUTLINE");
 		frame.smallText:SetPoint("TOPLEFT", MailFrame, "TOPLEFT", 75, -38);
-		frame.smallText:SetWidth(270);
+		-- No fixed width: the label is sized from the mailbox frame's width (see
+		-- GetTimeLeftTextWidth) so it always wraps within the frame and leaves 1/5 of
+		-- the frame empty on the right, no matter how wide the mailbox frame is
+		frame.smallText:SetWidth(self:GetTimeLeftTextWidth());
 		frame.smallText:SetJustifyH("LEFT");
 		frame.smallText:SetJustifyV("MIDDLE");
 		
-		-- SMALLER CLICKABLE AREA: the label spans 270px left-to-right from x=75, but a
-		-- click layer that wide swallows clicks meant for the MailFrame underneath.
+		-- SMALLER CLICKABLE AREA: the label starts 75px from the left edge and wraps at
+		-- 4/5 of the mailbox frame's width, but a click layer that wide swallows clicks
+		-- meant for the MailFrame underneath.
 		-- Halve the previous 120px hit box to 60px and centre it on the label instead of
 		-- anchoring it at the left edge, so only clicks around the middle of the text copy it.
 		frame:SetPoint("CENTER", MailFrame, "TOPLEFT", 75 + 60, -38 - 7);
@@ -737,6 +741,14 @@ local mailRemainingPatterns = {
 	soon = L["|cffffffff%d|r/|cffffffff%d|r mail remaining - everything will be opened soon..."],
 };
 
+-- The time left label is anchored 75px from the left edge of the mailbox frame and must
+-- leave 1/5 of the frame's width empty on the right, so it can only use 4/5 of the frame
+-- width minus that left offset. Calculating it from the frame's actual width (instead of
+-- a fixed 270px) keeps the text from ever extending beyond the mailbox frame
+function mod:GetTimeLeftTextWidth()
+	return math.max(20, ( MailFrame:GetWidth() * 4 / 5 ) - 75);
+end
+
 function mod:UpdateTimer()
 	if lastSync then
 		self:UpdateMailCount();
@@ -805,13 +817,16 @@ function mod:UpdateTimer()
 				remainingText = format(mailRemainingPatterns.soon, numCurrentMail, numTotalMail);
 			end
 			
+			-- Re-derive the wrap width from the current frame width so the label still
+			-- leaves 1/5 of the mailbox frame empty on the right if it was resized
+			self.timeLeftFrame.smallText:SetWidth(self:GetTimeLeftTextWidth());
 			self.timeLeftFrame.smallText:SetText(remainingText);
 			-- Dynamically shrink clickable button to text width (TBC fix)
 			if self.timeLeftFrame and self.timeLeftFrame.smallText then
 				local w = self.timeLeftFrame.smallText:GetStringWidth()
 				local h = self.timeLeftFrame.smallText:GetStringHeight()
-				-- +10 padding, clamp to avoid huge 270px block
-				self.timeLeftFrame:SetWidth(math.min(270, math.max(20, w + 10)))
+				-- +10 padding, clamp to the label's max width to avoid a huge block
+				self.timeLeftFrame:SetWidth(math.min(self:GetTimeLeftTextWidth(), math.max(20, w + 10)))
 				self.timeLeftFrame:SetHeight(math.max(12, h + 2))
 			end
 		else

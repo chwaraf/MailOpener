@@ -466,6 +466,15 @@ function MailOpener:MAIL_SHOW()
 		end
 	end
 	
+	-- Reset the mail amount baseline for this visit. It must not carry over from the
+	-- previous one: when the mailbox is closed before the mail was opened (or in the
+	-- middle of opening) and reopened, the next sync would then see exactly the same
+	-- amount of mail as before the close, no "new mail arrived" condition would
+	-- trigger, and automatic opening would stay dead until a /reload. It also keeps
+	-- the CheckInbox override from blocking every sync of a fresh visit, since its
+	-- strict path only kicks in when lastAmount > 0 and mail hasn't been opened yet
+	lastAmount = 0;
+	
 	hasOpenedMailAlready = nil;
 	mailboxEmptySoundPlayed = nil;
 	mailboxEmptySoundPlayedThisVisit = nil;

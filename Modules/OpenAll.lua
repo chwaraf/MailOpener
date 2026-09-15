@@ -669,14 +669,14 @@ function mod:OpenMail(index)
 					return;
 				else
 					continue = false;
-			
-					self:Debug("MO_OPENING_MAIL (#" .. index .. ")");
 					
-					-- Notifiy other modules of opening
-					self:SendMessage("MO_OPENING_MAIL");
+					self:Debug("MO_OPENING_MAIL (#" .. index .. ")");
 					
 					if self.db.profile.keepFreeSpace > 0 and items and slotsAvailable and items > slotsAvailable then
 						-- If this mail contains more items than the space available, we must only take a few attachments
+						-- Notifiy other modules of opening (no gold passed: the mail isn't necessarily
+						-- emptied on this pass, so its gold may not be credited yet)
+						self:SendMessage("MO_OPENING_MAIL");
 						
 						for attachIndex = 1, ATTACHMENTS_MAX_RECEIVE do
 							if GetInboxItemLink(index, attachIndex) then
@@ -714,6 +714,10 @@ function mod:OpenMail(index)
 						end
 					else
 						-- Take everything from this mail
+						-- Notifiy other modules of opening, passing along the mail's gold so it can
+						-- be accounted for right away instead of waiting for the PLAYER_MONEY event
+						-- (which can arrive after the batch summary, see Collected:MO_OPENING_MAIL)
+						self:SendMessage("MO_OPENING_MAIL", gold);
 						AutoLootMailItem(index);
 					end
 					

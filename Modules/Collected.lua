@@ -81,6 +81,10 @@ function mod:MAIL_SHOW()
 		previousGold = GetMoney();
 		earned = 0;
 		batchEarned = 0;
+		
+		-- Also listen to the opener so the gold of every mail it loots is accounted for
+		-- right away instead of waiting for the PLAYER_MONEY event (see MO_OPENING_MAIL)
+		self:RegisterMessage("MO_OPENING_MAIL");
 	end
 	
 	-- Items
@@ -134,6 +138,29 @@ function mod:PLAYER_MONEY()
 	end
 	
 	previousGold = currentGold;
+end
+
+-- Called by the opener right before looting a mail, with the amount of gold the mail
+-- contains. The gold is accounted for immediately instead of waiting for the
+-- PLAYER_MONEY event: the money update can arrive in a later message than the mail
+-- deletion, so the event can fire after the batch summary has already been printed,
+-- which made the batch summary report less gold than the batch actually contained
+-- (the gold then showed up in the next batch or not at all). The money baseline is
+-- raised by the same amount, so the PLAYER_MONEY event for this gold produces no
+-- extra delta. Gold collected outside of this path (like opening a mail by hand) is
+-- still picked up by the PLAYER_MONEY delta
+function mod:MO_OPENING_MAIL(gold)
+	if gold and gold > 0 then
+		earned = ( earned + gold );
+		batchEarned = ( batchEarned + gold );
+		previousGold = ( previousGold + gold );
+		
+		updated = true;
+		
+		if self.db.profile.sessionSummary then
+			sessionEarned = ( sessionEarned + gold );
+		end
+	end
 end
 
 function mod:BAG_UPDATE()
@@ -222,6 +249,7 @@ function mod:Stop()
 	
 	-- Money
 	self:UnregisterEvent("PLAYER_MONEY");
+	self:UnregisterMessage("MO_OPENING_MAIL");
 	previousGold = nil;
 	earned = nil;
 	batchEarned = nil;

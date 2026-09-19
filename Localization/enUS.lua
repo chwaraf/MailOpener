@@ -2,6 +2,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("MailOpener", "enUS", true, false);
 if not L then return; end
 
 -- Core
+L["No mailbox UI on this client - Mail Opener is disabled until one is available."] = true -- Needs review
 L["|cff00ff00Enabled|r"] = true -- Needs review
 L["|cff00ff00Enabling|r automatic opening of mail."] = true -- Needs review
 L["|cff15ff00Mail Opener|r: %s"] = true -- Needs review

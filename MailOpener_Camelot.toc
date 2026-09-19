@@ -1,0 +1,33 @@
+## Interface: 16001
+## Title: Mail Opener
+## Notes: Mail Opener will automatically retrieve all your mail from the mailbox.
+## Author: Zerotorescue (at EU - Al'Akir)
+## Version: v1.2.30
+## SavedVariables: MailOpenerDB
+## LoadManagers: AddonLoader
+## X-LoadOn-Slash: /mo, /mailopen, /mailopener
+## X-LoadOn-Mailbox: true
+## X-LoadOn-InterfaceOptions: Mail Opener
+
+embeds.xml
+
+Localization/enUS.lua
+
+Localization/deDE.lua
+Localization/esES.lua
+Localization/esMX.lua
+Localization/frFR.lua
+Localization/koKR.lua
+Localization/ruRU.lua
+Localization/zhCN.lua
+Localization/zhTW.lua
+
+Utils.lua
+Core.lua
+
+Modules/BeanCounterSupport.lua
+Modules/Collected.lua
+Modules/Config.lua
+Modules/FailSafe.lua
+Modules/Indicator.lua
+Modules/OpenAll.lua

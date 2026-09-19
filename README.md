@@ -25,6 +25,24 @@ localization files are declared in the TOC).
 Ace3 and `!LibUIDropDownMenu` ship inside `Libs/` and are loaded via `embeds.xml`, so there
 are no external dependencies.
 
+### World of Warcraft: Forever
+
+[World of Warcraft: Forever](https://news.blizzard.com/en-us/article/24302093/carve-a-new-path-with-world-of-warcraft-forever)
+is Blizzard's official "Classic Plus" client (codename *Camelot*, build `1.60.1`, game type
+`camelot`, TOC interface `16001`); Battle.net installs it as the `wow_classic_beta` product.
+It runs the modern (retail-generation) API, so the same addon code targets it — only the
+manifest differs:
+
+* Install the folder into the Forever client's AddOns directory:
+  `World of Warcraft/_classic_beta_/Interface/AddOns/MailOpener/`.
+* The Forever loader picks `MailOpener_Camelot.toc` (`## Interface: 16001`); the retail
+  client keeps using `MailOpener.toc`. Same code, same saved variables (`MailOpenerDB`).
+* **Current limitation (beta 1.60.1):** Blizzard's mailbox UI (`Blizzard_MailFrame`) is
+  only enabled for the retail client there (`AllowLoadGameType: mainline`), so the Forever
+  client has no mailbox yet. Mail Opener detects the missing mailbox at load time, prints
+  a notice in chat and disables itself instead of erroring. As soon as a mailbox UI ships
+  in the Forever client, the addon is functional again without any code changes.
+
 ## Usage
 
 | Action | Result |
@@ -96,6 +114,8 @@ the `CENTER` anchor's x-offset if you also want it off-centre).
 
 * Bag handling goes through `Utils.lua`, which prefers the `C_Container` API and falls back
   to the pre-10.0 globals, so the same code runs on Classic and retail-derived clients.
+* On a client with no mailbox UI (e.g. the WoW Forever beta), the addon loads in a dormant,
+  self-disabled state and re-activates by itself once a mailbox exists.
 * Mail near the *keep free space* limit is partially looted rather than skipped entirely.
 * Blizzard's `CheckInbox` is overridden (optional) to delay refreshes while mail remains.
 * TradeSkillMaster's own Open All button is hidden so its text doesn't overlap.

@@ -11,6 +11,16 @@ local AutoOpenMail, MailOpenerConfig, lastAmount, lastQuickAuctionsStatus, fresh
 function MailOpener:OnInitialize()
 	self:Debug("OnInitialize");
 	
+	-- Some clients ship no mailbox UI at all (e.g. World of Warcraft: Forever,
+	-- whose Blizzard_MailFrame is currently enabled for the retail client only).
+	-- We have nothing to hook into there, so stay loadable but fully dormant:
+	-- disabling here skips our OnEnable and every module's OnEnable, and the
+	-- addon becomes active again as soon as a mailbox exists on such a client.
+	if not MailFrame then
+		DEFAULT_CHAT_FRAME:AddMessage("|cffffcc00Mail Opener:|r " .. L["No mailbox UI on this client - Mail Opener is disabled until one is available."]);
+		self:SetDisabled("NoMailUI");
+		return;
+	end
 	
 	
 	

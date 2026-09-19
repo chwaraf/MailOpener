@@ -23,6 +23,7 @@ Localization/zhCN.lua
 Localization/zhTW.lua
 
 Utils.lua
+Forever.lua
 Core.lua
 
 Modules/BeanCounterSupport.lua

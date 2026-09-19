@@ -17,7 +17,11 @@ function MailOpener:OnInitialize()
 	-- disabling here skips our OnEnable and every module's OnEnable, and the
 	-- addon becomes active again as soon as a mailbox exists on such a client.
 	if not MailFrame then
-		DEFAULT_CHAT_FRAME:AddMessage("|cffffcc00Mail Opener:|r " .. L["No mailbox UI on this client - Mail Opener is disabled until one is available."]);
+		if MailOpenerIsForever then
+			DEFAULT_CHAT_FRAME:AddMessage("|cffffcc00Mail Opener:|r " .. L["WoW Forever beta has no mailbox yet - Mail Opener is disabled until one is available."]);
+		else
+			DEFAULT_CHAT_FRAME:AddMessage("|cffffcc00Mail Opener:|r " .. L["No mailbox UI on this client - Mail Opener is disabled until one is available."]);
+		end
 		self:SetDisabled("NoMailUI");
 		return;
 	end

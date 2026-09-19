@@ -42,6 +42,11 @@ manifest differs:
   client has no mailbox yet. Mail Opener detects the missing mailbox at load time, prints
   a notice in chat and disables itself instead of erroring. As soon as a mailbox UI ships
   in the Forever client, the addon is functional again without any code changes.
+* Forever is indistinguishable from retail at runtime (same engine and UI,
+  `WOW_PROJECT_ID == WOW_PROJECT_MAINLINE`), so the small `Forever.lua` — listed only in
+  `MailOpener_Camelot.toc` — sets the `MailOpenerIsForever` global at load time. That is
+  the only reliable client signal (the same approach BetterBags uses for its
+  `isForever` flag).
 
 ## Usage
 
@@ -63,6 +68,7 @@ addon name while Mail Opener is working, so other mail addons can cooperate.
 ```
 Core.lua              Addon object, saved variables, mail frame widgets, copy popup
 Utils.lua             C_Container / legacy container-API shims (MO_GetContainerItemInfo, …)
+Forever.lua           Load-time MailOpenerIsForever flag — listed only in MailOpener_Camelot.toc
 embeds.xml            Library loader
 Localization/         enUS (default) + deDE esES esMX frFR koKR ruRU zhCN zhTW
 Modules/              Feature modules (see below)

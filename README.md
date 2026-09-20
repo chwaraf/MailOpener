@@ -47,6 +47,11 @@ manifest differs:
   `MailOpener_Camelot.toc` — sets the `MailOpenerIsForever` global at load time. That is
   the only reliable client signal (the same approach BetterBags uses for its
   `isForever` flag).
+* **Known beta bug (1.60.1):** the Forever client writes SavedVariables on exit but
+  never reads them back, so Mail Opener's settings (`MailOpenerDB`) reset to defaults
+  every launch. That is a client bug, confirmed by several authors
+  ([forever-addon-kit](https://github.com/Thunderz96/forever-addon-kit), EU forums);
+  the addon itself works normally once a mailbox exists.
 
 ## Usage
 

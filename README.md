@@ -37,11 +37,11 @@ manifest differs:
   `World of Warcraft/_classic_beta_/Interface/AddOns/MailOpener/`.
 * The Forever loader picks `MailOpener_Camelot.toc` (`## Interface: 16001`); the retail
   client keeps using `MailOpener.toc`. Same code, same saved variables (`MailOpenerDB`).
-* **Current limitation (beta 1.60.1):** Blizzard's mailbox UI (`Blizzard_MailFrame`) is
-  only enabled for the retail client there (`AllowLoadGameType: mainline`), so the Forever
-  client has no mailbox yet. Mail Opener detects the missing mailbox at load time, prints
-  a notice in chat and disables itself instead of erroring. As soon as a mailbox UI ships
-  in the Forever client, the addon is functional again without any code changes.
+* The mailbox UI shipped in the beta shortly after launch (it was absent in the first
+  `1.60.1` builds); Mail Opener works with it in the Forever client. For builds without
+  a mailbox, the addon detects the missing `MailFrame` at load time, prints a notice in
+  chat and disables itself instead of erroring, and is functional again automatically as
+  soon as a mailbox UI is available.
 * Forever is indistinguishable from retail at runtime (same engine and UI,
   `WOW_PROJECT_ID == WOW_PROJECT_MAINLINE`), so the small `Forever.lua` — listed only in
   `MailOpener_Camelot.toc` — sets the `MailOpenerIsForever` global at load time. That is

@@ -149,7 +149,9 @@ end
 -- raised by the same amount, so the PLAYER_MONEY event for this gold produces no
 -- extra delta. Gold collected outside of this path (like opening a mail by hand) is
 -- still picked up by the PLAYER_MONEY delta
-function mod:MO_OPENING_MAIL(gold)
+-- CallbackHandler-1.0 passes the message name as the first argument, so the gold
+-- amount is the second parameter here
+function mod:MO_OPENING_MAIL(message, gold)
 	if gold and gold > 0 then
 		earned = ( earned + gold );
 		batchEarned = ( batchEarned + gold );

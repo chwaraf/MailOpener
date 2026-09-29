@@ -13,6 +13,14 @@ function mod:OnEnable()
 	
 	MinimapMailFrameUpdate = NewMinimapMailFrameUpdate;
 	
+	-- Modern clients (current retail and World of Warcraft: Forever) no longer call the
+	-- MinimapMailFrameUpdate global for the tooltip, so hook the indicator frame's
+	-- OnEnter directly there to keep replacing the tooltip with our summary
+	local mailIndicator = self:GetMailIndicator();
+	if mailIndicator and not self:IsHooked(mailIndicator, "OnEnter") then
+		self:HookScript(mailIndicator, "OnEnter", NewMinimapMailFrameUpdate);
+	end
+	
 	self:RegisterEvent("MAIL_SHOW");
 	
 	-- If we were toggling this module on while the mailbox is opened we must register all events again
@@ -26,6 +34,11 @@ function mod:OnDisable()
 	self:Debug("OnDisable");
 	
 	MinimapMailFrameUpdate = originalMinimapMailFrameUpdate;
+	
+	local mailIndicator = self:GetMailIndicator();
+	if mailIndicator and self:IsHooked(mailIndicator, "OnEnter") then
+		self:Unhook(mailIndicator, "OnEnter");
+	end
 	
 	self:UnregisterEvent("MAIL_SHOW");
 end
@@ -62,16 +75,29 @@ function mod:MO_OPEN_COMPLETE()
 	self:UpdateIcon();
 end
 
+-- Resolve the minimap mail indicator frame. The MiniMapMailFrame global no longer
+-- exists on modern clients (retail and World of Warcraft: Forever alike), where the
+-- frame is only reachable as MinimapCluster.IndicatorFrame.MailFrame
+function mod:GetMailIndicator()
+	return MiniMapMailFrame or (MinimapCluster and MinimapCluster.IndicatorFrame and MinimapCluster.IndicatorFrame.MailFrame);
+end
+
 function mod:UpdateIcon()
 	local numItems, totalItems = GetInboxNumItems();
 	lastKnownTotalItems = totalItems;
 	
+	local mailIndicator = self:GetMailIndicator();
+	if not mailIndicator then
+		-- No mail indicator on this client, nothing to update
+		return;
+	end
+	
 	if totalItems > numItems then
 		-- Unread items not currently visible remaining
-		MiniMapMailFrame:Show();
+		mailIndicator:Show();
 	else
 		-- Current mail is everything there is
-		MiniMapMailFrame:Hide();
+		mailIndicator:Hide();
 	end
 end
 

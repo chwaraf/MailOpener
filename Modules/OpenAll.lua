@@ -424,7 +424,9 @@ function mod:BAG_UPDATE()
 end
 
 -- We registered this event to look for the inventory full error message because this is faster than counting the amount of items in the inventory all the time
-function mod:UI_ERROR_MESSAGE(e, errorMessage)
+-- CallbackHandler-1.0 passes the event name first, then the payload; since Legion the
+-- event fires (errorType, message), where message is the same text as the ERR_* globalstrings
+function mod:UI_ERROR_MESSAGE(event, errorType, errorMessage)
 	if errorMessage == ERR_INV_FULL then
 		-- Inventory is full.
 		

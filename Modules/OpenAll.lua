@@ -42,6 +42,7 @@ function mod:OnEnable()
 	if not self.btnOpenAll then
 		-- Open all button
 		local button = CreateFrame("Button", "btnMailOpenerOpenAll", InboxFrame, "UIPanelButtonTemplate");
+		button:SetFrameStrata("HIGH"); -- Forever draws the inbox decoration above default-strata children
 		button:SetText(L["Open all"]);
 		button:SetHeight(26);
 		button:SetWidth(120);
@@ -178,6 +179,7 @@ function mod:OnEnable()
 		self:Debug("Building text frame");
 		
 		local frame = CreateFrame("Button", "MailOpenerTimeLeftButton", InboxFrame);
+		frame:SetFrameStrata("HIGH"); -- Forever draws the inbox decoration above default-strata children
 		
 		-- Mail counter
 		frame.text = frame:CreateFontString("MailOpenerTimeLeftFrameMailCount", "OVERLAY", "GameFontHighlight");
@@ -234,6 +236,7 @@ function mod:OnEnable()
 		-- time left label no longer uses. It is only shown while mail is still waiting
 		-- for the next server refresh (one batch picked up, more still in the queue)
 		local reloadButton = CreateFrame("Button", "btnMailOpenerReload", MailFrame, "UIPanelButtonTemplate");
+		reloadButton:SetFrameStrata("HIGH"); -- Forever draws the inbox decoration above default-strata children
 		reloadButton:SetText(L["Reload"]);
 		reloadButton:SetHeight(23);
 		reloadButton:SetWidth(60);

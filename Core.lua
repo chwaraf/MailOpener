@@ -172,6 +172,10 @@ function MailOpener:OnInitialize()
 	
 	-- Make the open all checkbox
 	local check = CreateFrame("CheckButton", "cbMailOpenerEnable", MailFrame, "UICheckButtonTemplate");
+	-- World of Warcraft: Forever renders its inbox decoration above default-strata
+	-- children of the mail frame, hiding everything we add to it; keep our controls on
+	-- the HIGH strata so they stay visible and clickable on every client
+	check:SetFrameStrata("HIGH");
 	check:SetHeight(26);
 	check:SetWidth(26);
 	check:SetPoint("TOPLEFT", MailFrame, "TOPLEFT", 68, -13);
@@ -244,6 +248,7 @@ function MailOpener:OnInitialize()
 	
 	-- Make the config button
 	local button = CreateFrame("Button", "btnMailOpenerConfig", MailFrame, "UIPanelButtonTemplate")
+	button:SetFrameStrata("HIGH"); -- see cbMailOpenerEnable
 	button:SetText(L["Config"])
 	button:SetHeight(23)
 	button:SetWidth(55)

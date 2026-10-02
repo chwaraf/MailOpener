@@ -172,10 +172,8 @@ function MailOpener:OnInitialize()
 	
 	-- Make the open all checkbox
 	local check = CreateFrame("CheckButton", "cbMailOpenerEnable", MailFrame, "UICheckButtonTemplate");
-	-- World of Warcraft: Forever renders its inbox decoration above default-strata
-	-- children of the mail frame, hiding everything we add to it; keep our controls on
-	-- the HIGH strata so they stay visible and clickable on every client
-	check:SetFrameStrata("HIGH");
+	-- Keep our controls above the mail window on every client (see RaiseAboveMailUI)
+	self:RaiseAboveMailUI(check);
 	check:SetHeight(26);
 	check:SetWidth(26);
 	check:SetPoint("TOPLEFT", MailFrame, "TOPLEFT", 68, -13);
@@ -248,7 +246,7 @@ function MailOpener:OnInitialize()
 	
 	-- Make the config button
 	local button = CreateFrame("Button", "btnMailOpenerConfig", MailFrame, "UIPanelButtonTemplate")
-	button:SetFrameStrata("HIGH"); -- see cbMailOpenerEnable
+	self:RaiseAboveMailUI(button); -- see RaiseAboveMailUI
 	button:SetText(L["Config"])
 	button:SetHeight(23)
 	button:SetWidth(55)
@@ -814,6 +812,31 @@ function MailOpener:ToggleQAStatus()
 			ZeroAuctionsAutoMail:Click();
 		end
 	end
+end
+
+-- Raise one of our mailbox controls above the mail window itself. World of Warcraft:
+-- Forever draws its inbox bar over default-strata children of the mail frame, hiding
+-- every control we add. The strata a window runs on can differ between clients (and
+-- InboxFrame can sit on a different strata than MailFrame), so place the control one
+-- strata above whichever of the two sits highest. Floor at HIGH, and cap at FULLSCREEN
+-- so dropdown menus and tooltips always stay on top of us.
+local STRATA_ORDER = { "BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG", "FULLSCREEN", "FULLSCREEN_DIALOG", "TOOLTIP" };
+local function strataRank(frame)
+	local strata = (frame and frame.GetFrameStrata and frame:GetFrameStrata()) or "MEDIUM";
+	for rank, name in ipairs(STRATA_ORDER) do
+		if name == strata then
+			return rank;
+		end
+	end
+	return 3; -- MEDIUM
+end
+function MailOpener:RaiseAboveMailUI(frame)
+	local rank = math.max(strataRank(MailFrame), strataRank(InboxFrame));
+	
+	-- One strata above the covering window, at least HIGH, never above FULLSCREEN
+	rank = math.min(math.max(rank + 1, 4), 6);
+	
+	frame:SetFrameStrata(STRATA_ORDER[rank]);
 end
 
 function MailOpener:FormatMoney(copper)

@@ -46,7 +46,16 @@ function mod:OnEnable()
 		button:SetText(L["Open all"]);
 		button:SetHeight(26);
 		button:SetWidth(120);
-		button:SetPoint("BOTTOM", InboxFrame, "CENTER", -10, -165);
+		-- Anchor below the last mail slot instead of a fixed offset from the frame
+		-- centre: World of Warcraft: Forever lays the inbox slots out differently than
+		-- retail, so the old constant ended up beside the last slot there. Falling back
+		-- to the frame bottom keeps the button inside the pane when the slots are not
+		-- addressable by name
+		if InboxItem7 then
+			button:SetPoint("TOP", InboxItem7, "BOTTOM", -10, -8);
+		else
+			button:SetPoint("BOTTOM", InboxFrame, "BOTTOM", -10, 8);
+		end
 		button:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp");
 		button:SetScript("OnClick", function(self, mouseButton)
 			local action = "open";

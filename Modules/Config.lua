@@ -6,21 +6,33 @@ mod.moduleDescription = L["Builds and loads the config frame(s) and handles the 
 mod.moduleRequired = false;
 
 local Media = LibStub("LibSharedMedia-3.0");
-Media:Register("sound", "Cartoon FX", [[Sound\Doodad\Goblin_Lottery_Open03.wav]]);
-Media:Register("sound", "Cheer", [[Sound\Event Sounds\OgreEventCheerUnique.wav]]);
-Media:Register("sound", "Explosion", [[Sound\Doodad\Hellfire_Raid_FX_Explosion05.wav]]);
-Media:Register("sound", "Fel Nova", [[Sound\Spells\SeepingGaseous_Fel_Nova.wav]]);
-Media:Register("sound", "Fel Portal", [[Sound\Spells\Sunwell_Fel_PortalStand.wav]]);
-Media:Register("sound", "Magic Click", [[Sound\interface\MagicClick.wav]]);
-Media:Register("sound", "Rubber Ducky", [[Sound\Doodad\Goblin_Lottery_Open01.wav]]);
-Media:Register("sound", "Shing!", [[Sound\Doodad\PortcullisActive_Closed.wav]]);
-Media:Register("sound", "Simon Chime", [[Sound\Doodad\SimonGame_LargeBlueTree.wav]]);
-Media:Register("sound", "Simon Error", [[Sound\Spells\SimonGame_Visual_BadPress.wav]]);
-Media:Register("sound", "Simon Start", [[Sound\Spells\SimonGame_Visual_GameStart.wav]]);
-Media:Register("sound", "War Drums", [[Sound\Event Sounds\Event_wardrum_ogre.wav]]);
-Media:Register("sound", "Wham!", [[Sound\Doodad\PVP_Lordaeron_Door_Open.wav]]);
-Media:Register("sound", "Whisper Ping", [[Sound\interface\iTellMessage.wav]]);
-Media:Register("sound", "You Will Die!", [[Sound\Creature\CThun\CThunYouWillDIe.wav]]);
+
+-- Register the notification sounds, skipping any file this client doesn't ship:
+-- World of Warcraft: Forever has a reduced sound set, and LibSharedMedia-3.0 throws
+-- an error for a missing file, which would abort the rest of this file. The skipped
+-- sounds simply don't appear in the sound selection dropdowns there
+local function registerSound(name, path)
+	local ok = pcall(Media.Register, Media, "sound", name, path);
+	if not ok then
+		MailOpener:Debug("Sound not available on this client, skipping registration: " .. name);
+	end
+end
+
+registerSound("Cartoon FX", [[Sound\Doodad\Goblin_Lottery_Open03.wav]]);
+registerSound("Cheer", [[Sound\Event Sounds\OgreEventCheerUnique.wav]]);
+registerSound("Explosion", [[Sound\Doodad\Hellfire_Raid_FX_Explosion05.wav]]);
+registerSound("Fel Nova", [[Sound\Spells\SeepingGaseous_Fel_Nova.wav]]);
+registerSound("Fel Portal", [[Sound\Spells\Sunwell_Fel_PortalStand.wav]]);
+registerSound("Magic Click", [[Sound\interface\MagicClick.wav]]);
+registerSound("Rubber Ducky", [[Sound\Doodad\Goblin_Lottery_Open01.wav]]);
+registerSound("Shing!", [[Sound\Doodad\PortcullisActive_Closed.wav]]);
+registerSound("Simon Chime", [[Sound\Doodad\SimonGame_LargeBlueTree.wav]]);
+registerSound("Simon Error", [[Sound\Spells\SimonGame_Visual_BadPress.wav]]);
+registerSound("Simon Start", [[Sound\Spells\SimonGame_Visual_GameStart.wav]]);
+registerSound("War Drums", [[Sound\Event Sounds\Event_wardrum_ogre.wav]]);
+registerSound("Wham!", [[Sound\Doodad\PVP_Lordaeron_Door_Open.wav]]);
+registerSound("Whisper Ping", [[Sound\interface\iTellMessage.wav]]);
+registerSound("You Will Die!", [[Sound\Creature\CThun\CThunYouWillDIe.wav]]);
 
 local AceConfigDialog;
 	

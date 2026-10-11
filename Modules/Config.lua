@@ -8,13 +8,20 @@ mod.moduleRequired = false;
 local Media = LibStub("LibSharedMedia-3.0");
 
 -- Register the notification sounds, skipping any file this client doesn't ship:
--- World of Warcraft: Forever has a reduced sound set, and LibSharedMedia-3.0 throws
--- an error for a missing file, which would abort the rest of this file. The skipped
--- sounds simply don't appear in the sound selection dropdowns there
+-- World of Warcraft: Forever has a reduced sound set, and recent LibSharedMedia-3.0
+-- releases raise an error when registering a file that doesn't exist (and this client
+-- reports that error even when it is caught). Pre-check existence with
+-- C_UIFileAsset.IsKnownFile (retail 12.0.7+ / Forever 1.60.1) so no error is raised;
+-- skipped sounds simply don't appear in the sound selection dropdowns there
 local function registerSound(name, path)
+	if C_UIFileAsset and C_UIFileAsset.IsKnownFile and not C_UIFileAsset.IsKnownFile(path) then
+		MailOpener:Debug("Sound not available on this client, skipping registration: " .. name);
+		return;
+	end
+	
 	local ok = pcall(Media.Register, Media, "sound", name, path);
 	if not ok then
-		MailOpener:Debug("Sound not available on this client, skipping registration: " .. name);
+		MailOpener:Debug("Sound registration failed, skipping: " .. name);
 	end
 end
 

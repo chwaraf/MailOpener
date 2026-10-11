@@ -360,6 +360,9 @@ function MailOpener:OnEnable()
 	lastAmount = 0;
 	self.debugChannel = nil;
 	
+	-- Swap notification sounds that this client doesn't ship for ones it does
+	self:EnsureNotificationSounds();
+	
 	if not originalCheckInbox then
 		-- Override the CheckInbox function
 		-- Remember the original
@@ -837,6 +840,38 @@ function MailOpener:RaiseAboveMailUI(frame)
 	rank = math.min(math.max(rank + 1, 4), 6);
 	
 	frame:SetFrameStrata(STRATA_ORDER[rank]);
+end
+
+-- Make sure the configured notification sounds point at files this client actually
+-- ships. Newer clients (World of Warcraft: Forever, Classic Era 1.15.9+, TBC 2.5.6+)
+-- ship reduced/changed sound sets, so a saved or default selection can point at a
+-- file that no longer exists, which PlaySoundFile then plays silently. When that
+-- happens, swap in the first sound Mail Opener itself managed to register on this
+-- client so the notification is still heard
+function MailOpener:EnsureNotificationSounds()
+	if not (C_UIFileAsset and C_UIFileAsset.IsKnownFile) then
+		-- No way to check file existence on this client, keep whatever is configured
+		return;
+	end
+	
+	local Config = self:GetModule("Config");
+	local availableSounds = (Config and Config:GetRegisteredSounds()) or {};
+	
+	local notifications = self.db.profile.notifications;
+	for _, prefix in ipairs({ "bagsFull", "mailboxEmpty" }) do
+		local fileKey = prefix .. "SoundFile";
+		local nameKey = prefix .. "SoundFileName";
+		
+		if notifications[fileKey] and not C_UIFileAsset.IsKnownFile(notifications[fileKey]) then
+			local fallbackName, fallbackPath = next(availableSounds);
+			if fallbackPath then
+				self:Debug("Configured " .. prefix .. " sound doesn't exist on this client, using " .. fallbackName .. " instead.");
+				
+				notifications[fileKey] = fallbackPath;
+				notifications[nameKey] = fallbackName;
+			end
+		end
+	end
 end
 
 function MailOpener:FormatMoney(copper)
